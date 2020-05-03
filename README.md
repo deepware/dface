@@ -23,15 +23,19 @@ for res in result:
 
 Bounding boxes is a list of four coordinates `(x1, y1, x2, y2)` for each face detected in the frame. Probabilities is a list of confidence scores between 0 and 1 for each face. Landmarks is a list of facial landmark points. There are five points for each face.
 
+The implementation is at [mtcnn.py](mtcnn.py)
+
 ### FaceNet
 
 This implementation takes a list of cropped faces and returns a list of face embedding vector of 512 dimensions. These embeddings then can be used for detecting facial similarities, clustering identities and so on.
 
 ```python
-facenet = FaceNet('models/facenet.pt', device)
+facenet = FaceNet('models/facenet.pt', 'cuda')
 ...
 embeds = facenet.embedding(faces)
 ```
+
+The implementation is at [facenet.py](facenet.py)
 
 ### Full working example
 
@@ -40,4 +44,6 @@ The repo contains an example script that uses both MTCNN and Facenet to read a v
 You can run the example by simply typing: `python3 example.py video.mp4`. A directory will be created with the same name as video that contains clustered identities. The following is an example image.
 
 ![the dude](https://i.imgur.com/npt6W0l.png)
+
+The implementation is at [example.py](example.py)
 
