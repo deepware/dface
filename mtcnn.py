@@ -20,18 +20,12 @@ class MTCNN():
 
 
 	def detect(self, imgs):
-		minsize = 60
-		res = np.prod(imgs[0].shape[:2])
-		if res <= 720*480:
-			minsize = 27
-		elif res <= 1280*720:
-			minsize = 40
-
-		batches = [imgs[i:i+10] for i in range(0, len(imgs), 10)]
+		minsize = max(96 * min(imgs[0].shape[:2])/1080, 40)
 
 		boxes, points = [], []
+
 		with torch.no_grad():
-			for batch in batches:
+			for batch in np.array_split(imgs, 5):
 				batch_boxes, batch_points = detect_face(
 					batch, minsize, self.pnet, self.rnet, self.onet,
 					[0.7, 0.8, 0.9], 0.709, self.device)
@@ -47,6 +41,10 @@ class MTCNN():
 			else:
 				result.append((box[:, :4], box[:, 4], point))
 		return result
+
+
+def empty_cache():
+	torch.cuda.empty_cache()
 
 
 class PNet(nn.Module):
@@ -201,7 +199,7 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 		im_data = imresample(imgs, (int(h * scale + 1), int(w * scale + 1)))
 		im_data = (im_data - 127.5) * 0.0078125
 		reg, probs = pnet(im_data)
-
+		empty_cache()
 		boxes_scale, image_inds_scale = generateBoundingBox(reg, probs[:, 1], scale, threshold[0])
 		boxes.append(boxes_scale)
 		image_inds.append(image_inds_scale)
@@ -239,7 +237,13 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 				im_data.append(imresample(img_k, (24, 24)))
 		im_data = torch.cat(im_data, dim=0)
 		im_data = (im_data - 127.5) * 0.0078125
-		out = rnet(im_data)
+
+		out = []
+		for batch in im_data.split(2000):
+			out += [rnet(batch)]
+		z = list(zip(*out))
+		out = (torch.cat(z[0]), torch.cat(z[1]))
+		empty_cache()
 
 		out0 = out[0].permute(1, 0)
 		out1 = out[1].permute(1, 0)
@@ -266,7 +270,13 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 				im_data.append(imresample(img_k, (48, 48)))
 		im_data = torch.cat(im_data, dim=0)
 		im_data = (im_data - 127.5) * 0.0078125
-		out = onet(im_data)
+
+		out = []
+		for batch in im_data.split(500):
+			out += [onet(batch)]
+		z = list(zip(*out))
+		out = (torch.cat(z[0]), torch.cat(z[1]), torch.cat(z[2]))
+		empty_cache()
 
 		out0 = out[0].permute(1, 0)
 		out1 = out[1].permute(1, 0)
@@ -302,6 +312,7 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 		batch_points.append(points[b_i_inds].copy())
 
 	batch_boxes, batch_points = np.array(batch_boxes), np.array(batch_points)
+	empty_cache()
 
 	return batch_boxes, batch_points
 

@@ -22,14 +22,16 @@ class FaceNet():
 			face = TF.to_tensor(np.float32(face))
 			face = (face - 127.5) / 128.0
 			done.append(face)
-		return done
+		return torch.stack(done)
 
 	def embedding(self, faces):
 		faces = self.preprocess(faces)
-		faces = torch.stack(faces).to(self.device)
+		embeds = []
 		with torch.no_grad():
-			embeds = self.model(faces).cpu()
-		return embeds.numpy()
+			for x in torch.split(faces, 40):
+				y = self.model(x.to(self.device))
+				embeds.append(y.cpu())
+		return torch.cat(embeds).numpy()
 
 
 class InceptionResnetV1(nn.Module):
