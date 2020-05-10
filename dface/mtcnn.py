@@ -6,9 +6,13 @@ from torchvision.ops.boxes import batched_nms
 
 
 class MTCNN():
-	def __init__(self, model, device):
+	def __init__(self, device, model=None):
 		self.device = device
-		model = torch.load(model)
+		url = 'https://github.com/deepware/dFace/raw/master/models/mtcnn.pt'
+		if model is None:
+			model = torch.hub.load_state_dict_from_url(url)
+		else:
+			model = torch.load(model)
 
 		self.pnet = PNet().to(device)
 		self.rnet = RNet().to(device)

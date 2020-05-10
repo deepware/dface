@@ -5,8 +5,7 @@ import torch
 from PIL import Image
 from sklearn.cluster import DBSCAN
 
-from mtcnn import MTCNN
-from facenet import FaceNet
+from dface import MTCNN, FaceNet
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
@@ -52,8 +51,8 @@ def main():
 
 	print("loading models.")
 
-	mtcnn = MTCNN('models/mtcnn.pt', device)
-	facenet = FaceNet('models/facenet.pt', device)
+	mtcnn = MTCNN(device)
+	facenet = FaceNet(device)
 
 	print("reading video frames.")
 	frames = get_frames(video)

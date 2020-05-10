@@ -7,9 +7,13 @@ import torchvision.transforms.functional as TF
 
 
 class FaceNet():
-	def __init__(self, model, device):
+	def __init__(self, device, model=None):
 		resnet = InceptionResnetV1().to(device).eval()
-		resnet.load_state_dict(torch.load(model))
+		url = 'https://github.com/deepware/dFace/raw/master/models/facenet.pt'
+		if model is None:
+			resnet.load_state_dict(torch.hub.load_state_dict_from_url(url))
+		else:
+			resnet.load_state_dict(torch.load(model))
 		self.model = resnet
 		self.device = device
 
