@@ -1,4 +1,4 @@
-## Facelib
+## dFace
 
 Face detection and recognition library that focuses on speed and ease of use.
 This is a stripped down version of timesler's [facenet](https://github.com/timesler/facenet-pytorch) repo with some improvements.
