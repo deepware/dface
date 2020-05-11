@@ -13,7 +13,7 @@ Alternatively you can install with `pip3 install dface` command. Weights will be
 
 ### MTCNN
 
-This implementation takes a list of frames and returns a list of detected faces. The input and output lists always have the same size. If no face is detected for a frame, the corresponding list element is `None`, otherwise it's a tuple of three elements; `(bounding_boxs, probabilities, landmarks)`.
+This implementation takes a list of frames and returns a list of detected faces. The input and output lists always have the same size. If no face is detected for a frame, the corresponding list element is returned `None`, otherwise it's a tuple of three elements; `(bounding_boxes, probabilities, landmarks)`.
 
 ```python
 mtcnn = MTCNN('cuda')
@@ -45,7 +45,7 @@ Both algorithms accept model path as the second argument if you want to load mod
 
 ### Full working example
 
-The repo contains an example script that uses both MTCNN and Facenet to read a video and cluster the faces. It uses [OpenCV](https://pypi.org/project/opencv-python/) to read video frames and [DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html) to cluster faces.
+The repo contains an [example](example.py) script that uses both MTCNN and Facenet to read a video and cluster the faces. It uses [OpenCV](https://pypi.org/project/opencv-python/) to read video frames and [DBSCAN](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.DBSCAN.html) to cluster faces.
 
 You can run the example by simply typing: `python3 example.py video.mp4`. A directory will be created with the same name as video that contains clustered identities. The following is an example image.
 
