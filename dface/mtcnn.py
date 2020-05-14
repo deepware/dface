@@ -23,8 +23,9 @@ class MTCNN():
 		self.onet.load_state_dict(model['onet'])
 
 
-	def detect(self, imgs):
-		minsize = max(96 * min(imgs[0].shape[:2])/1080, 40)
+	def detect(self, imgs, minsize=None):
+		if minsize is None:
+			minsize = max(96 * min(imgs[0].shape[:2])/1080, 40)
 
 		boxes, points = [], []
 
