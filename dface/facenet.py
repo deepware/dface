@@ -7,7 +7,10 @@ import torchvision.transforms.functional as TF
 
 
 class FaceNet():
-	def __init__(self, device, model=None):
+	def __init__(self, device=None, model=None):
+		if device is None:
+			device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
 		resnet = InceptionResnetV1().to(device).eval()
 		url = 'https://github.com/deepware/dFace/raw/master/models/facenet.pt'
 		if model is None:
@@ -29,6 +32,8 @@ class FaceNet():
 		return torch.stack(done)
 
 	def embedding(self, faces):
+		if len(faces) == 0:
+			return np.array([], np.float32)
 		faces = self.preprocess(faces)
 		embeds = []
 		with torch.no_grad():

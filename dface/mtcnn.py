@@ -6,8 +6,11 @@ from torchvision.ops.boxes import batched_nms
 
 
 class MTCNN():
-	def __init__(self, device, model=None):
+	def __init__(self, device=None, model=None):
+		if device is None:
+			device = 'cuda' if torch.cuda.is_available() else 'cpu'
 		self.device = device
+
 		url = 'https://github.com/deepware/dFace/raw/master/models/mtcnn.pt'
 		if model is None:
 			model = torch.hub.load_state_dict_from_url(url)
@@ -24,6 +27,9 @@ class MTCNN():
 
 
 	def detect(self, imgs, minsize=None):
+		if len(imgs) == 0:
+			return []
+
 		if minsize is None:
 			minsize = max(96 * min(imgs[0].shape[:2])/1080, 40)
 

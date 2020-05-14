@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setuptools.setup(
 	name="dface",
-	version="1.0",
+	version="1.1.1",
 	author="deepware",
 	author_email="dogan.kurt@dodobyte.com",
 	description="Face detection and recognition library that focuses on speed and ease of use.",
