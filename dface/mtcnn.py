@@ -36,7 +36,7 @@ class MTCNN():
 		boxes, points = [], []
 
 		with torch.no_grad():
-			for batch in np.array_split(imgs, 5):
+			for batch in np.array_split(imgs, len(imgs)//10+1):
 				batch_boxes, batch_points = detect_face(
 					batch, minsize, self.pnet, self.rnet, self.onet,
 					[0.7, 0.8, 0.9], 0.709, self.device)
