@@ -30,13 +30,19 @@ class MTCNN():
 		if len(imgs) == 0:
 			return []
 
+		if isinstance(imgs[0], np.ndarray):
+			h, w = imgs[0].shape[:2]
+		else:
+			w, h = imgs[0].size
+
 		if minsize is None:
-			minsize = max(96 * min(imgs[0].shape[:2])/1080, 40)
+			minsize = max(96 * min(w, h)/1080, 40)
 
 		boxes, points = [], []
 
 		with torch.no_grad():
-			for batch in np.array_split(imgs, len(imgs)//10+1):
+			batches = [imgs[i:i+10] for i in range(0, len(imgs), 10)]
+			for batch in batches:
 				batch_boxes, batch_points = detect_face(
 					batch, minsize, self.pnet, self.rnet, self.onet,
 					[0.7, 0.8, 0.9], 0.709, self.device)
