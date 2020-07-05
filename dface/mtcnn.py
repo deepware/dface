@@ -15,7 +15,7 @@ class MTCNN():
 		if model is None:
 			model = torch.hub.load_state_dict_from_url(url)
 		else:
-			model = torch.load(model)
+			model = torch.load(model, map_location=device)
 
 		self.pnet = PNet().to(device)
 		self.rnet = RNet().to(device)
@@ -60,8 +60,9 @@ class MTCNN():
 		return result
 
 
-def empty_cache():
-	torch.cuda.empty_cache()
+def empty_cache(device):
+	with torch.cuda.device(device):
+		torch.cuda.empty_cache()
 
 
 class PNet(nn.Module):
@@ -216,7 +217,7 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 		im_data = imresample(imgs, (int(h * scale + 1), int(w * scale + 1)))
 		im_data = (im_data - 127.5) * 0.0078125
 		reg, probs = pnet(im_data)
-		empty_cache()
+		empty_cache(device)
 		boxes_scale, image_inds_scale = generateBoundingBox(reg, probs[:, 1], scale, threshold[0])
 		boxes.append(boxes_scale)
 		image_inds.append(image_inds_scale)
@@ -260,7 +261,7 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 			out += [rnet(batch)]
 		z = list(zip(*out))
 		out = (torch.cat(z[0]), torch.cat(z[1]))
-		empty_cache()
+		empty_cache(device)
 
 		out0 = out[0].permute(1, 0)
 		out1 = out[1].permute(1, 0)
@@ -293,7 +294,7 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 			out += [onet(batch)]
 		z = list(zip(*out))
 		out = (torch.cat(z[0]), torch.cat(z[1]), torch.cat(z[2]))
-		empty_cache()
+		empty_cache(device)
 
 		out0 = out[0].permute(1, 0)
 		out1 = out[1].permute(1, 0)
@@ -329,7 +330,7 @@ def detect_face(imgs, minsize, pnet, rnet, onet, threshold, factor, device):
 		batch_points.append(points[b_i_inds].copy())
 
 	batch_boxes, batch_points = np.array(batch_boxes), np.array(batch_points)
-	empty_cache()
+	empty_cache(device)
 
 	return batch_boxes, batch_points
 
