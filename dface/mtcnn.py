@@ -61,8 +61,9 @@ class MTCNN():
 
 
 def empty_cache(device):
-	with torch.cuda.device(device):
-		torch.cuda.empty_cache()
+	if 'cuda' in device:
+		with torch.cuda.device(device):
+			torch.cuda.empty_cache()
 
 
 class PNet(nn.Module):
