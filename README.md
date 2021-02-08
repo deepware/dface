@@ -1,7 +1,7 @@
 ## dFace
 
 Face detection and recognition library that focuses on speed and ease of use.
-This is a stripped down version of timesler's [facenet](https://github.com/timesler/facenet-pytorch) repo with some improvements notably on memory overflows. This repository is actively developed and used in production.
+This is a stripped down version of timesler's [facenet](https://github.com/timesler/facenet-pytorch) repo with some improvements notably on memory overflows. This repository is actively developed and used in production at our [deepfake scanner](https://github.com/deepware/deepfake-scanner).
 
 [MTCNN](https://arxiv.org/abs/1604.02878) is used for face detection and [FaceNet](https://arxiv.org/abs/1503.03832) is used for generating face embeddings.
 
